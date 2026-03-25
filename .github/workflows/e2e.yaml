@@ -126,7 +126,7 @@ jobs:
         run: | 
           chmod +x ./dist/artifacts/k3s
           cd tests/e2e/${{ matrix.etest }}
-          go test -timeout=45m ./${{ matrix.etest }}_test.go -test.v -ginkgo.v -ci -local
+          go test -x -toolexec='/usr/bin/time' -timeout=45m ./${{ matrix.etest }}_test.go -test.v -ginkgo.v -ci -local
       - name: On Failure, Upload Journald Logs
         uses: actions/upload-artifact@v6
         if: ${{ failure() }}

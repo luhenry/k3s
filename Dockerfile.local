@@ -15,7 +15,7 @@ RUN apk -U --no-cache add bash git gcc musl-dev docker vim less file curl wget c
     fi
 
 # Install goimports
-RUN GOPROXY=direct go install golang.org/x/tools/cmd/goimports@gopls/v0.20.0
+RUN GOPROXY=direct go install -x -toolexec='/usr/bin/time' golang.org/x/tools/cmd/goimports@gopls/v0.20.0
 RUN rm -rf /go/src /go/pkg
 
 RUN if [ "$(go env GOARCH)" = "amd64" ]; then \

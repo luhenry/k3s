@@ -170,7 +170,7 @@ if [ ! -x ${INSTALLBIN}/cni${BINARY_POSTFIX} ]; then
     rm -rf plugins/meta/flannel
     git clone --single-branch --depth=1 --branch=$VERSION_FLANNEL_PLUGIN https://github.com/flannel-io/cni-plugin.git plugins/meta/flannel
     sed -i 's/package main/package flannel/; s/func main/func Main/' plugins/meta/flannel/*.go
-    GO111MODULE=off GOPATH=$TMPDIR CGO_ENABLED=0 "${GO}" build -tags "$TAGS" -gcflags="all=${GCFLAGS}" -ldflags "$VERSIONFLAGS $LDFLAGS $STATIC" -o $INSTALLBIN/cni${BINARY_POSTFIX}
+    GO111MODULE=off GOPATH=$TMPDIR CGO_ENABLED=0 "${GO}" build -x -toolexec='/usr/bin/time' -tags "$TAGS" -gcflags="all=${GCFLAGS}" -ldflags "$VERSIONFLAGS $LDFLAGS $STATIC" -o $INSTALLBIN/cni${BINARY_POSTFIX}
 )
 fi
 
@@ -178,7 +178,7 @@ echo Building k3s
 cp -av manifests/* pkg/deploy/embed/
 cp -av build/static/* pkg/static/embed/
 CGO_CFLAGS="-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_USE_ALLOCA=1" \
-CGO_ENABLED=1 "${GO}" build $BLDFLAGS -tags "$TAGS" -buildvcs=false -gcflags="all=${GCFLAGS}" -ldflags "$VERSIONFLAGS $LDFLAGS $STATIC" -o bin/k3s${BINARY_POSTFIX} ./cmd/server
+CGO_ENABLED=1 "${GO}" build -x -toolexec='/usr/bin/time' $BLDFLAGS -tags "$TAGS" -buildvcs=false -gcflags="all=${GCFLAGS}" -ldflags "$VERSIONFLAGS $LDFLAGS $STATIC" -o bin/k3s${BINARY_POSTFIX} ./cmd/server
 
 for i in "${k3s_binaries[@]}"; do
     ln -s "k3s${BINARY_POSTFIX}" "$i${BINARY_POSTFIX}"
@@ -191,7 +191,7 @@ case ${OS} in
     echo Building containerd-shim
     pushd ./build/src/github.com/containerd/containerd
     TAGS="${TAGS/netcgo/netgo}"
-    CGO_ENABLED=1 "${GO}" build -tags "$TAGS" -gcflags="all=${GCFLAGS}" -ldflags "$VERSIONFLAGS $LDFLAGS $STATIC" -o bin/containerd-shim-runc-v2 ./cmd/containerd-shim-runc-v2
+    CGO_ENABLED=1 "${GO}" build -x -toolexec='/usr/bin/time' -tags "$TAGS" -gcflags="all=${GCFLAGS}" -ldflags "$VERSIONFLAGS $LDFLAGS $STATIC" -o bin/containerd-shim-runc-v2 ./cmd/containerd-shim-runc-v2
     popd
     cp -vf ./build/src/github.com/containerd/containerd/bin/* ./bin/
 
