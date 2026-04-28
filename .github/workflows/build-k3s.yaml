@@ -84,6 +84,10 @@ jobs:
         push: false
         provenance: mode=min
         outputs: type=local,dest=.
+        cache-from: |
+          ${{ format('type=gha,scope=k3s-binary-{0}-{1}', inputs.os, inputs.arch) }}
+        cache-to: |
+          ${{ github.ref_name == github.event.repository.default_branch && format('type=gha,scope=k3s-binary-{0}-{1},mode=max', inputs.os, inputs.arch) || '' }}
 
     - name: Build K3s Binary Emulated
       if: inputs.arch != 'arm64' && inputs.arch != 'amd64' && inputs.arch != 'riscv64'
@@ -104,6 +108,10 @@ jobs:
         provenance: mode=min
         platforms: ${{ env.PLATFORM }}
         outputs: type=local,dest=.
+        cache-from: |
+          ${{ format('type=gha,scope=k3s-binary-{0}-{1}', inputs.os, inputs.arch) }}
+        cache-to: |
+          ${{ github.ref_name == github.event.repository.default_branch && format('type=gha,scope=k3s-binary-{0}-{1},mode=max', inputs.os, inputs.arch) || '' }}
 
     - name: Caculate binary checksum
       run: |
